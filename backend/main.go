@@ -30,7 +30,7 @@ func main() {
 		router.NoRoute(func(c *gin.Context) {
 			c.File("./public/index.html")
 		})
-		router.Use(cors.New(cors.Config{AllowAllOrigins: false}))
+		router.Use(cors.Default())
 	} else {
 		router.Use(middleware.Cors(middleware.CorsConfig{IsDevMode: true}))
 	}

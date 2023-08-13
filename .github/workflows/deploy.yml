@@ -32,3 +32,22 @@ jobs:
       - name: Apply terraform
         run: |
           terraform apply -auto-approve
+
+  frontend:
+    env:
+      REACT_APP_NAME: ${{ secrets.APP_NAME }}
+      REACT_APP_S3_URL: ${{ secrets.S3_URL }}
+      REACT_APP_DEFAULT_ITEM_IMAGE_NAME: ${{ secrets.DEFAULT_ITEM_IMAGE_NAME }}
+
+    steps:
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Move build to ../backend
+        run: |
+          mv build ../backend/public
