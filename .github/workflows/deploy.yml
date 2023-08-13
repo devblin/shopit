@@ -1,0 +1,34 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+
+    env:
+      TF_VAR_AWS_REGION: ${{ secrets.AWS_REGION }}
+      TF_VAR_AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      TF_VAR_AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Initialise terraform
+        run: |
+          terraform init
+
+      - name: Validate terraform
+        run: |
+          terraform validate
+
+      - name: Apply terraform
+        run: |
+          terraform apply -auto-approve

@@ -1,0 +1,50 @@
+version: "3"
+services:
+  backend:
+    container_name: shopit-backend-dev
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    command: fresh
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/usr/src/backend
+    networks:
+      - shopit-networks
+
+  frontend:
+    container_name: shopit-frontend-dev
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    command: npm start
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/usr/src/frontend
+    networks:
+      - shopit-networks
+
+  # mongodb:
+  #   container_name: shopit-mongodb-dev
+  #   restart: always
+  #   image: mongo:latest
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb-data:/data/db
+  #   networks:
+  #     - shopit-networks
+
+networks:
+  shopit-networks:
+    driver: bridge
+
+# volumes:
+#   mongodb-data:
+#     driver: local

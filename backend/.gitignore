@@ -11,3 +11,5 @@ terraform.tfplan
 
 # Local .terraform directories (Terraform 0.14+)
 **/.terraform/*
+
+gin-bin
