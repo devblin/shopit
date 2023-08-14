@@ -8,9 +8,18 @@ provider "aws" {
   region     = var.AWS_REGION
 }
 
+
 # S3 BUCKET SETUP
 resource "aws_s3_bucket" "shopit" {
   bucket = "shopit"
+}
+
+output "shopit_bucket_name" {
+  value = aws_s3_bucket.shopit.bucket
+}
+
+output "shopit_bucket_url" {
+  value = aws_s3_bucket.shopit.bucket_domain_name
 }
 
 resource "aws_s3_bucket_acl" "shopit" {
@@ -18,17 +27,20 @@ resource "aws_s3_bucket_acl" "shopit" {
   acl    = "public-read"
 }
 
+# STORING DEFAULT ASSETS
 resource "aws_s3_object" "default-product400" {
   bucket = aws_s3_bucket.shopit.id
   key    = "default-product400.jpg"
   source = "frontend/public/default-product400.jpg"
 }
 
+# STORING DEFAULT ASSETS
 resource "aws_s3_object" "default-product64" {
   bucket = aws_s3_bucket.shopit.id
   key    = "default-product64.jpg"
   source = "frontend/public/default-product64.jpg"
 }
+
 
 # DYNAMODB SETUP
 # DYNAMODB ITEM TABLE SETUP
@@ -43,6 +55,11 @@ resource "aws_dynamodb_table" "shopit_item" {
     type = "S"
   }
 }
+
+output "shopit_table_name" {
+  value = aws_dynamodb_table.shopit_item.name
+}
+
 
 # ECR SETUP
 resource "aws_ecr_repository" "shopit" {

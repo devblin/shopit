@@ -33,10 +33,20 @@ jobs:
         run: |
           terraform apply -auto-approve
 
+      - name: Set envs for next steps
+        run: |
+          SHOPIT_S3_URL=$(terraform output -raw shopit_bucket_url)
+          SHOPIT_REPO_URL=$(terraform output -raw shopit_repo_url)
+          AWS_S3_BUCKET=$(terraform output -raw shopit_bucket_name)
+          AWS_DYNAMO_DB_ITEM=$(terraform output -raw shopit_table_name)
+
+          echo "SHOPIT_S3_URL=${SHOPIT_S3_URL}" >> $GITHUB_ENV
+          echo "SHOPIT_REPO_URL=${SHOPIT_REPO_URL}" >> $GITHUB_ENV
+
   frontend:
     env:
       REACT_APP_NAME: ${{ secrets.APP_NAME }}
-      REACT_APP_S3_URL: ${{ secrets.S3_URL }}
+      REACT_APP_S3_URL: ${{ env.SHOPIT_S3_URL }}
       REACT_APP_DEFAULT_ITEM_IMAGE_NAME: ${{ secrets.DEFAULT_ITEM_IMAGE_NAME }}
 
     steps:
@@ -51,3 +61,34 @@ jobs:
       - name: Move build to ../backend
         run: |
           mv build ../backend/public
+
+  backend:
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      PORT: 5000
+
+    steps:
+      - name: Configure AWS creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Authenticate ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.SHOPIT_REPO_URL }}
+
+      - name: Build image
+        run: |
+          docker build -t shopit
+
+      - name: Tag image
+        run: |
+          docker tag shopit1:latest ${{ env.SHOPIT_REPO_URL }}:latest
+
+      - name: Push image to ECR
+        run: |
+          docker push ${{ env.SHOPIT_REPO_URL }}:latest        
