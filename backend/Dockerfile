@@ -8,4 +8,10 @@ RUN go install github.com/pilu/fresh@latest
 
 COPY . .
 
+# Update deps
 RUN go mod tidy
+
+# Build executeable
+RUN GOOS=linux CGO_ENABLED=0 go build -o /main
+
+CMD [ "/main" ]
