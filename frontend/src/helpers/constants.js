@@ -1,5 +1,5 @@
 const BASE_API_URL = process.env.REACT_APP_ENV === "dev" ? process.env.REACT_APP_API : ''
-const BASE_S3_URL = process.env.REACT_APP_S3_URL
+const BASE_S3_URL = process.env.REACT_APP_S3_URL.replace(/\/$/, "");
 
 const
 	PRIMARY_COLOR = '#6c5af2',

@@ -27,7 +27,7 @@ var DESCRIPTION string
 var STATUS int = http.StatusOK
 var DATA interface{}
 var AWS_S3_BUCKET string
-var AWS_DYNAMO_DB_ITEM string
+var AWS_DYNAMO_DB_ITEM_TABLE string
 var THUMBNAIL_HEIGHT = 64
 var STANDARD_HEIGHT = 400
 var DEFAULT_ITEM_IMAGE_NAME string
@@ -36,7 +36,7 @@ var IMAGE_DIMENSIONS = []uint{uint(THUMBNAIL_HEIGHT), uint(STANDARD_HEIGHT)}
 func init() {
 	DEFAULT_ITEM_IMAGE_NAME = helpers.GetEnv("DEFAULT_ITEM_IMAGE_NAME")
 	AWS_S3_BUCKET = helpers.GetEnv("AWS_S3_BUCKET")
-	AWS_DYNAMO_DB_ITEM = helpers.GetEnv("AWS_DYNAMO_DB_ITEM")
+	AWS_DYNAMO_DB_ITEM_TABLE = helpers.GetEnv("AWS_DYNAMO_DB_ITEM_TABLE")
 }
 
 func GetItemList(c *gin.Context) {
@@ -48,7 +48,7 @@ func GetItemList(c *gin.Context) {
 	var scanOutput *dynamodb.ScanOutput
 
 	if scanOutput, err = AWS_DYNAMO_DB.Scan(&dynamodb.ScanInput{
-		TableName: aws.String(AWS_DYNAMO_DB_ITEM),
+		TableName: aws.String(AWS_DYNAMO_DB_ITEM_TABLE),
 	}); err != nil {
 		MESSAGE = err.Error()
 		STATUS = http.StatusInternalServerError
@@ -93,7 +93,7 @@ func AddItem(c *gin.Context) {
 				MESSAGE = err.Error()
 			} else if putItemOut, err := AWS_DYNAMO_DB.PutItem(&dynamodb.PutItemInput{
 				Item:      itemAttr,
-				TableName: aws.String(AWS_DYNAMO_DB_ITEM),
+				TableName: aws.String(AWS_DYNAMO_DB_ITEM_TABLE),
 			}); err != nil {
 				STATUS = http.StatusInternalServerError
 				MESSAGE = err.Error()
@@ -123,7 +123,7 @@ func GetItemDetails(c *gin.Context) {
 		MESSAGE = "Invalid item id"
 	} else if getItemOut, err := AWS_DYNAMO_DB.GetItem(&dynamodb.GetItemInput{
 		Key:       map[string]*dynamodb.AttributeValue{"Id": {S: aws.String(Id)}},
-		TableName: aws.String(AWS_DYNAMO_DB_ITEM),
+		TableName: aws.String(AWS_DYNAMO_DB_ITEM_TABLE),
 	}); err != nil {
 		STATUS = http.StatusInternalServerError
 		MESSAGE = err.Error()
@@ -155,7 +155,7 @@ func DeleteItem(c *gin.Context) {
 		MESSAGE = err.Error()
 	} else {
 		if getItemOut, err := AWS_DYNAMO_DB.GetItem(&dynamodb.GetItemInput{
-			TableName: aws.String(AWS_DYNAMO_DB_ITEM),
+			TableName: aws.String(AWS_DYNAMO_DB_ITEM_TABLE),
 			Key:       map[string]*dynamodb.AttributeValue{"Id": {S: aws.String(itemInput.Id)}},
 		}); err != nil {
 			STATUS = http.StatusInternalServerError
@@ -164,7 +164,7 @@ func DeleteItem(c *gin.Context) {
 			STATUS = http.StatusInternalServerError
 			MESSAGE = err.Error()
 		} else if _, err := AWS_DYNAMO_DB.DeleteItem(&dynamodb.DeleteItemInput{
-			TableName: aws.String(AWS_DYNAMO_DB_ITEM),
+			TableName: aws.String(AWS_DYNAMO_DB_ITEM_TABLE),
 			Key:       map[string]*dynamodb.AttributeValue{"Id": {S: aws.String(itemInput.Id)}},
 		}); err != nil {
 			STATUS = http.StatusInternalServerError
@@ -219,7 +219,7 @@ func UpdateItem(c *gin.Context) {
 
 			if getItemOut, err := AWS_DYNAMO_DB.GetItem(&dynamodb.GetItemInput{
 				Key:       map[string]*dynamodb.AttributeValue{"Id": {S: aws.String(itemId)}},
-				TableName: aws.String(AWS_DYNAMO_DB_ITEM),
+				TableName: aws.String(AWS_DYNAMO_DB_ITEM_TABLE),
 			}); err != nil {
 				STATUS = http.StatusNotFound
 				MESSAGE = err.Error()
@@ -277,7 +277,7 @@ func UpdateItem(c *gin.Context) {
 					}
 
 					if _, err := AWS_DYNAMO_DB.UpdateItem(&dynamodb.UpdateItemInput{
-						TableName:        aws.String(AWS_DYNAMO_DB_ITEM),
+						TableName:        aws.String(AWS_DYNAMO_DB_ITEM_TABLE),
 						Key:              map[string]*dynamodb.AttributeValue{"Id": {S: aws.String(itemId)}},
 						ReturnValues:     aws.String(dynamodb.ReturnValueAllNew),
 						AttributeUpdates: attributeUpdates,
@@ -334,6 +334,7 @@ func putObjectInS3(fileName string, file io.ReadSeeker) error {
 		Bucket: aws.String(AWS_S3_BUCKET),
 		Key:    aws.String(fileName),
 		Body:   file,
+		ACL:    aws.String(s3.BucketCannedACLPublicRead),
 	})
 
 	return err

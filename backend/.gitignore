@@ -1,5 +1,6 @@
 tmp/
 .env
+public
 
 # Terraform files
 .terraform/

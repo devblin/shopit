@@ -12,7 +12,7 @@ function Main() {
     const generalClasses = generalStyles()
 
     useEffect(() => {
-        document.title = process.env.REACT_APP_NAME
+        document.title = "Shopit"
     });
 
     return (

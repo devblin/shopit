@@ -7,7 +7,7 @@ import FootBar from "./components/custom/FootBar";
 
 function App() {
 	useEffect(() => {
-		document.title = process.env.REACT_APP_NAME
+		document.title = "Shopit"
 	}, []);
 
 	return (

@@ -1,71 +1,55 @@
-variable "AWS_REGION" { default = "" }
-variable "AWS_ACCESS_KEY" { default = "" }
-variable "AWS_SECRET_KEY" { default = "" }
-
 provider "aws" {
   access_key = var.AWS_ACCESS_KEY
   secret_key = var.AWS_SECRET_KEY
   region     = var.AWS_REGION
 }
 
-
-# S3 BUCKET SETUP
-resource "aws_s3_bucket" "shopit" {
-  bucket = "shopit"
+data "aws_vpc" "default_vpc" {
+  default = true
 }
 
-output "shopit_bucket_name" {
-  value = aws_s3_bucket.shopit.bucket
+locals {
+  default_vpc_id = data.aws_vpc.default_vpc.id
 }
 
-output "shopit_bucket_url" {
-  value = aws_s3_bucket.shopit.bucket_domain_name
+module "s3" {
+  source = "./tfmodules/s3"
 }
 
-resource "aws_s3_bucket_acl" "shopit" {
-  bucket = aws_s3_bucket.shopit.bucket
-  acl    = "public-read"
+module "dynamodb" {
+  source = "./tfmodules/dynamodb"
 }
 
-# STORING DEFAULT ASSETS
-resource "aws_s3_object" "default-product400" {
-  bucket = aws_s3_bucket.shopit.id
-  key    = "default-product400.jpg"
-  source = "frontend/public/default-product400.jpg"
-}
+module "ecr" {
+  source = "./tfmodules/ecr"
 
-# STORING DEFAULT ASSETS
-resource "aws_s3_object" "default-product64" {
-  bucket = aws_s3_bucket.shopit.id
-  key    = "default-product64.jpg"
-  source = "frontend/public/default-product64.jpg"
-}
+  others = {
+    "shopit_bucket_url"       = module.s3.shopit_bucket_url
+    "default_item_image_name" = module.s3.default_item_image_name
+  }
 
-
-# DYNAMODB SETUP
-# DYNAMODB ITEM TABLE SETUP
-resource "aws_dynamodb_table" "shopit_item" {
-  name           = "shopit_item"
-  hash_key       = "Id"
-  read_capacity  = 30
-  write_capacity = 30
-
-  attribute {
-    name = "Id"
-    type = "S"
+  envs = {
+    "AWS_REGION" = var.AWS_REGION
+    "ENV"        = var.ENV
   }
 }
 
-output "shopit_table_name" {
-  value = aws_dynamodb_table.shopit_item.name
-}
+module "ecs" {
+  source = "./tfmodules/ecs"
 
+  others = {
+    "default_vpc_id"   = local.default_vpc_id
+    "shopit_image_url" = module.ecr.shopit_image_url
+  }
 
-# ECR SETUP
-resource "aws_ecr_repository" "shopit" {
-  name = "shopit"
-}
-
-output "shopit_repo_url" {
-  value = aws_ecr_repository.shopit.repository_url
+  envs = {
+    "AWS_ACCESS_KEY"           = var.AWS_ACCESS_KEY
+    "AWS_SECRET_KEY"           = var.AWS_SECRET_KEY
+    "AWS_REGION"               = var.AWS_REGION
+    "ENV"                      = var.ENV
+    "PORT"                     = var.PORT
+    "DEFAULT_ITEM_IMAGE_NAME"  = module.s3.default_item_image_name
+    "AWS_S3_BUCKET"            = module.s3.shopit_bucket_name
+    "AWS_DYNAMO_DB_ITEM_TABLE" = module.dynamodb.shopit_item_table_name
+  }
 }
