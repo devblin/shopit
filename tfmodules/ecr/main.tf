@@ -41,13 +41,15 @@ locals {
 
 resource "null_resource" "build_frontend" {
   provisioner "local-exec" {
-    command = local.frontend_build
+    command    = local.frontend_build
+    on_failure = fail
   }
 }
 
 resource "null_resource" "build_backend" {
   provisioner "local-exec" {
-    command = local.backed_docker_build
+    command    = local.backed_docker_build
+    on_failure = fail
   }
 
   depends_on = [null_resource.build_frontend]
