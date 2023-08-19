@@ -17,7 +17,7 @@ locals {
   shopit_repo_url  = aws_ecr_repository.shopit.repository_url
   shopit_image_url = "${local.shopit_repo_url}:latest"
 
-  docker_build = <<-EOT
+  frontend_build = <<-EOT
     echo "Building frontend..."
     cd frontend
     npm ci --force
@@ -28,20 +28,29 @@ locals {
     rm -rf ../backend/public
     mv build ../backend/public
     cd ..
+  EOT
 
+  backed_docker_build = <<-EOT
     echo "Building backend..."
     aws ecr get-login-password --region ${var.envs.AWS_REGION} | docker login --username AWS --password-stdin ${local.shopit_repo_url}
     docker build -t shopit backend
-    pwd
     docker tag shopit:latest ${local.shopit_image_url}
     docker push ${local.shopit_image_url}
   EOT
 }
 
-resource "null_resource" "build_push_docker_image" {
+resource "null_resource" "build_frontend" {
   provisioner "local-exec" {
-    command = local.docker_build
+    command = local.frontend_build
   }
+}
+
+resource "null_resource" "build_backend" {
+  provisioner "local-exec" {
+    command = local.backed_docker_build
+  }
+
+  depends_on = [null_resource.build_frontend]
 }
 
 output "shopit_repo_url" {
