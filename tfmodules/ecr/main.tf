@@ -22,7 +22,7 @@ locals {
     cd frontend
     npm ci --force
     export REACT_APP_ENV=${var.envs.ENV}
-    export REACT_APP_S3_URL=${var.others.shopit_bucket_url}
+    export REACT_APP_S3_URL=https://${var.others.shopit_bucket_url}
     export REACT_APP_DEFAULT_ITEM_IMAGE_NAME=${var.others.default_item_image_name}
     npm run build -- --ignore-path .env
     rm -rf ../backend/public
