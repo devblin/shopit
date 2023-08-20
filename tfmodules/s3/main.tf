@@ -75,13 +75,14 @@ data "aws_s3_object" "shopit_port" {
 }
 
 locals {
-  shopit_port = tonumber(coalesce(data.aws_s3_object.shopit_port.body, 5000)) == 5000 ? 5001 : 5000
+  shopit_port = tonumber(coalesce(try(data.aws_s3_object.shopit_port.body, null), 5000)) == 5000 ? 5001 : 5000
 }
 
 resource "aws_s3_object" "shopit_port" {
-  bucket = "terra-form"
-  key    = "shopit_port"
-  source = local.shopit_port
+  bucket       = "terra-form"
+  key          = "shopit_port"
+  content      = local.shopit_port
+  content_type = "text/plain"
 }
 
 output "shopit_port" {
