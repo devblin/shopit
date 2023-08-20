@@ -228,6 +228,10 @@ resource "aws_lb_target_group" "shopit" {
     unhealthy_threshold = 2
     healthy_threshold   = 2
   }
+
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 resource "aws_lb_listener" "shopit" {
