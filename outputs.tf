@@ -11,6 +11,10 @@ output "shopit_bucket_url" {
   value = module.s3.shopit_bucket_url
 }
 
+output "shopit_port" {
+  value = module.s3.shopit_port
+}
+
 # ecr outputs
 output "shopit_repo_url" {
   value = module.ecr.shopit_repo_url
