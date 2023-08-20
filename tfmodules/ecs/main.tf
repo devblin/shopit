@@ -173,7 +173,6 @@ resource "aws_ecs_task_definition" "shopit" {
   requires_compatibilities = ["EC2"]
   cpu                      = 1024
   memory                   = 350
-  skip_destroy             = true
 
   container_definitions = jsonencode([{
     name  = local.shopit_container_name
