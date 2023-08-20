@@ -33,8 +33,8 @@ To test the site locally, follow below steps:
     DATABASE_URL=mongodb://127.0.0.1:27017
     DATABASE_NAME=
     PORT=5000
-    AWS_ACCESS_KEY=
-    AWS_SECRET_KEY=
+    AWS_ACCESS_KEY_ID=
+    AWS_SECRET_ACCESS_KEY=
     AWS_REGION=ap-south-1
     AWS_S3_BUCKET=shop-it
     GIN_MODE=debug
@@ -42,7 +42,7 @@ To test the site locally, follow below steps:
     ENV=dev
     ```
 -   Create AWS-S3 bucket with given **`AWS_S3_BUCKET=shop-it`** name, in **`AWS_REGION=ap-south-1`** region.
--   Obtain **`AWS_ACCESS_KEY`** and **`AWS_SECRET_KEY`** from your AWS account.
+-   Obtain **`AWS_ACCESS_KEY_ID`** and **`AWS_SECRET_ACCESS_KEY`** from your AWS account.
 -   After configuring **`env/.env`** file, open your terminal and enter below command in root of this project dir.
     ```sh
     go run main.go

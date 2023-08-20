@@ -32,11 +32,11 @@ func init() {
 
 	var err error = nil
 	var AWS_REGION = helpers.GetEnv("AWS_REGION")
-	var AWS_ACCESS_KEY = helpers.GetEnv("AWS_ACCESS_KEY")
-	var AWS_SECRET_KEY = helpers.GetEnv("AWS_SECRET_KEY")
+	var AWS_ACCESS_KEY_ID = helpers.GetEnv("AWS_ACCESS_KEY_ID")
+	var AWS_SECRET_ACCESS_KEY = helpers.GetEnv("AWS_SECRET_ACCESS_KEY")
 	var AWS_CONFIG = &aws.Config{
 		Region:           aws.String(AWS_REGION),
-		Credentials:      credentials.NewStaticCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY, ""),
+		Credentials:      credentials.NewStaticCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, ""),
 		Endpoint:         aws.String(ENDPOINT),
 		S3ForcePathStyle: aws.Bool(true),
 	}
