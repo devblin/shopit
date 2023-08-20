@@ -156,9 +156,9 @@ resource "aws_ecs_capacity_provider" "shopit_capacity" {
 
 resource "aws_ecs_cluster_capacity_providers" "shopit" {
   cluster_name       = aws_ecs_cluster.shopit.name
-  capacity_providers = [aws_ecs_capacity_provider.shopit.name]
+  capacity_providers = [aws_ecs_capacity_provider.shopit_capacity.name]
 
-  depends_on = [aws_ecs_cluster.shopit, aws_ecs_capacity_provider.shopit]
+  depends_on = [aws_ecs_cluster.shopit, aws_ecs_capacity_provider.shopit_capacity]
 }
 
 # create log group
