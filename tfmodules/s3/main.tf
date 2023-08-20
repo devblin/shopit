@@ -67,3 +67,23 @@ output "shopit_bucket_url" {
 
   depends_on = [aws_s3_bucket.shopit]
 }
+
+# get existing port
+data "aws_s3_object" "shopit_port" {
+  bucket = "terra-form"
+  key    = "shopit_port"
+}
+
+locals {
+  shopit_port = tonumber(coalesce(data.aws_s3_object.shopit_port.body, 5000)) == 5000 ? 5001 : 5000
+}
+
+resource "aws_s3_object" "shopit_port" {
+  bucket = "terra-form"
+  key    = "shopit_port"
+  source = local.shopit_port
+}
+
+output "shopit_port" {
+  value = local.shopit_port
+}
