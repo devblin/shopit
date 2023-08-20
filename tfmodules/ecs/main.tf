@@ -144,8 +144,8 @@ resource "aws_autoscaling_group" "shopit" {
   depends_on = [aws_launch_template.shopit, data.aws_subnets.shopit]
 }
 
-resource "aws_ecs_capacity_provider" "shopit" {
-  name = "shopit"
+resource "aws_ecs_capacity_provider" "shopit_capacity" {
+  name = "shopit_capacity"
 
   auto_scaling_group_provider {
     auto_scaling_group_arn = aws_autoscaling_group.shopit.arn
