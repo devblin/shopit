@@ -1,3 +1,8 @@
+variable "envs" {
+  type    = map(any)
+  default = {}
+}
+
 resource "aws_s3_bucket" "shopit" {
   bucket        = "shop-it"
   force_destroy = true
@@ -75,14 +80,29 @@ data "aws_s3_object" "shopit_port" {
 }
 
 locals {
-  shopit_port = tonumber(coalesce(try(data.aws_s3_object.shopit_port.body, null), 5000)) == 5000 ? 5001 : 5000
+  shopit_port = tonumber(coalesce(trimspace(try(data.aws_s3_object.shopit_port.body, null)), 5000)) == 5000 ? 5001 : 5000
 }
 
-resource "aws_s3_object" "shopit_port" {
-  bucket       = "terra-form"
-  key          = "shopit_port"
-  content      = local.shopit_port
-  content_type = "text/plain"
+resource "null_resource" "shopit_port" {
+  provisioner "local-exec" {
+    command = <<-EOT
+    echo ${local.shopit_port} > shopit_port.txt
+    aws s3api put-object \
+    --bucket terra-form \
+    --key shopit_port \
+    --body shopit_port.txt \
+    --content-type text/plain \
+    --region ${var.envs.AWS_REGION}
+    EOT
+
+    on_failure = fail
+  }
+
+  triggers = {
+    always_run = timestamp()
+  }
+
+  depends_on = [data.aws_s3_object.shopit_port]
 }
 
 output "shopit_port" {
