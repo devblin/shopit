@@ -23,6 +23,10 @@ locals {
 
 module "s3" {
   source = "./tfmodules/s3"
+
+  envs = {
+    "AWS_REGION" = var.AWS_REGION
+  }
 }
 
 module "dynamodb" {
