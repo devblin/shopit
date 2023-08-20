@@ -98,13 +98,6 @@ resource "null_resource" "shopit_port" {
   depends_on = [data.aws_s3_object.shopit_port]
 }
 
-resource "aws_s3_object" "shopit_port" {
-  bucket       = "terra-form"
-  key          = "shopit_port"
-  content      = local.shopit_port
-  content_type = "text/plain"
-}
-
 output "shopit_port" {
   value = local.shopit_port
 }
