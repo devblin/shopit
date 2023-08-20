@@ -1,6 +1,15 @@
+terraform {
+  backend "s3" {
+    bucket         = "terra-form"
+    dynamodb_table = "terra-form"
+    key            = "shopit"
+    region         = "ap-south-1"
+  }
+}
+
 provider "aws" {
-  access_key = var.AWS_ACCESS_KEY
-  secret_key = var.AWS_SECRET_KEY
+  access_key = var.AWS_ACCESS_KEY_ID
+  secret_key = var.AWS_SECRET_ACCESS_KEY
   region     = var.AWS_REGION
 }
 
@@ -43,8 +52,8 @@ module "ecs" {
   }
 
   envs = {
-    "AWS_ACCESS_KEY"           = var.AWS_ACCESS_KEY
-    "AWS_SECRET_KEY"           = var.AWS_SECRET_KEY
+    "AWS_ACCESS_KEY_ID"        = var.AWS_ACCESS_KEY_ID
+    "AWS_SECRET_ACCESS_KEY"    = var.AWS_SECRET_ACCESS_KEY
     "AWS_REGION"               = var.AWS_REGION
     "ENV"                      = var.ENV
     "PORT"                     = var.PORT
