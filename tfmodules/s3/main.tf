@@ -81,10 +81,10 @@ locals {
 resource "null_resource" "shopit_port" {
   provisioner "local-exec" {
     command = <<EOT
-    aws s3api put-object
-    --bucket terra-form
-    --key shopit_port
-    --body ${local.shopit_port}
+    aws s3api put-object \
+    --bucket terra-form \
+    --key shopit_port \
+    --body ${local.shopit_port} \
     --content-type text/plain
     EOT
 
