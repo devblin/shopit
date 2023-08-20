@@ -40,6 +40,10 @@ locals {
 }
 
 resource "null_resource" "build_frontend" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
   provisioner "local-exec" {
     command    = local.frontend_build
     on_failure = fail
@@ -47,6 +51,10 @@ resource "null_resource" "build_frontend" {
 }
 
 resource "null_resource" "build_backend" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
   provisioner "local-exec" {
     command    = local.backed_docker_build
     on_failure = fail
