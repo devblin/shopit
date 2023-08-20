@@ -7,6 +7,12 @@ terraform {
   }
 }
 
+resource "aws_s3_object" "shopit_port" {
+  bucket = "terra-form"
+  key    = "shopit_port"
+  source = var.PORT
+}
+
 provider "aws" {
   access_key = var.AWS_ACCESS_KEY_ID
   secret_key = var.AWS_SECRET_ACCESS_KEY
