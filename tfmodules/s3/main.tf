@@ -78,6 +78,26 @@ locals {
   shopit_port = tonumber(coalesce(try(data.aws_s3_object.shopit_port.body, null), 5000)) == 5000 ? 5001 : 5000
 }
 
+resource "null_resource" "shopit_port" {
+  provisioner "local-exec" {
+    command = <<EOT
+    aws s3api put-object
+    --bucket terra-form
+    --key shopit_port
+    --body ${local.shopit-port}
+    --content-type text/plain
+    EOT
+
+    on_failure = fail
+  }
+
+  triggers = {
+    always_run = timestamp()
+  }
+
+  depends_on = [data.aws_s3_object.shopit_port]
+}
+
 resource "aws_s3_object" "shopit_port" {
   bucket       = "terra-form"
   key          = "shopit_port"
