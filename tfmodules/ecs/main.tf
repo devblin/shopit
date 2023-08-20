@@ -256,7 +256,6 @@ resource "aws_ecs_service" "shopit" {
   launch_type                       = "EC2"
   desired_count                     = 1
   scheduling_strategy               = "REPLICA"
-  force_new_deployment              = true
   health_check_grace_period_seconds = 300
   triggers = {
     redeployment = timestamp()
