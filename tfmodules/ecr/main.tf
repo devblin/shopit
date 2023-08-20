@@ -41,7 +41,7 @@ locals {
 
 resource "null_resource" "build_frontend" {
   triggers = {
-    always_run = "${timestamp()}"
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {
@@ -52,7 +52,7 @@ resource "null_resource" "build_frontend" {
 
 resource "null_resource" "build_backend" {
   triggers = {
-    always_run = "${timestamp()}"
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {
