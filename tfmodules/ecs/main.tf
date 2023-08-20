@@ -215,7 +215,7 @@ resource "aws_lb" "shopit" {
 }
 
 resource "aws_lb_target_group" "shopit" {
-  name             = "shopit"
+  name_prefix      = "shopit"
   target_type      = "instance"
   port             = tonumber(var.envs.PORT)
   protocol         = "HTTP"
@@ -230,7 +230,7 @@ resource "aws_lb_target_group" "shopit" {
   }
 
   lifecycle {
-    ignore_changes = [name]
+    create_before_destroy = true
   }
 }
 
