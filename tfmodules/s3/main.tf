@@ -1,3 +1,8 @@
+variable "envs" {
+  type    = map(any)
+  default = {}
+}
+
 resource "aws_s3_bucket" "shopit" {
   bucket        = "shop-it"
   force_destroy = true
@@ -86,7 +91,8 @@ resource "null_resource" "shopit_port" {
     --bucket terra-form \
     --key shopit_port \
     --body shopit_port.txt \
-    --content-type text/plain
+    --content-type text/plain \
+    --region ${var.envs.AWS_REGION}
     EOT
 
     on_failure = fail
