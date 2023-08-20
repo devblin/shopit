@@ -3,10 +3,10 @@ name: Deploy
 on:
     push:
         branches:
-            - production
+            - production-destroy
 
 jobs:
-    deploy:
+    destroy:
         runs-on: ubuntu-latest
 
         environment: production
@@ -33,6 +33,6 @@ jobs:
               run: |
                   terraform validate
 
-            - name: Apply terraform
+            - name: Destroy terraform
               run: |
-                  terraform apply -auto-approve
+                  terraform destroy -auto-approve
