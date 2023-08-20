@@ -214,10 +214,10 @@ resource "aws_lb" "shopit" {
   depends_on = [aws_security_group.shopit_all_to_alb, data.aws_subnets.shopit]
 }
 
-resource "aws_lb_target_group" "shopit5000" {
-  name             = "shopit5000"
+resource "aws_lb_target_group" "shopit" {
+  name             = "shopit"
   target_type      = "instance"
-  port             = 5000
+  port             = tonumber(var.envs.PORT)
   protocol         = "HTTP"
   protocol_version = "HTTP1"
   vpc_id           = var.others.default_vpc_id
@@ -240,12 +240,12 @@ resource "aws_lb_listener" "shopit" {
 
     forward {
       target_group {
-        arn = aws_lb_target_group.shopit5000.arn
+        arn = aws_lb_target_group.shopit.arn
       }
     }
   }
 
-  depends_on = [aws_lb_target_group.shopit5000, aws_lb.shopit]
+  depends_on = [aws_lb_target_group.shopit, aws_lb.shopit]
 }
 
 # create ecs service
@@ -271,12 +271,12 @@ resource "aws_ecs_service" "shopit" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.shopit5000.arn
+    target_group_arn = aws_lb_target_group.shopit.arn
     container_name   = local.shopit_container_name
     container_port   = var.envs.PORT
   }
 
-  depends_on = [aws_ecs_cluster.shopit, aws_ecs_task_definition.shopit, aws_lb_target_group.shopit5000]
+  depends_on = [aws_ecs_cluster.shopit, aws_ecs_task_definition.shopit, aws_lb_target_group.shopit]
 }
 
 output "shopit_lb_dns" {
