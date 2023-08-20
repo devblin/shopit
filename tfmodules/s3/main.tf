@@ -84,7 +84,7 @@ resource "null_resource" "shopit_port" {
     aws s3api put-object
     --bucket terra-form
     --key shopit_port
-    --body ${local.shopit-port}
+    --body ${local.shopit_port}
     --content-type text/plain
     EOT
 
