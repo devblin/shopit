@@ -2,6 +2,8 @@
 
 A inventory management system written in **Golang**, **DynamoDB** for database, **S3** for file storage and **ReactJS** for UI.
 
+[![Deploy](https://github.com/devblin/shopit/actions/workflows/deploy.yml/badge.svg?branch=production)](https://github.com/devblin/shopit/actions/workflows/deploy.yml)
+
 ## Features:
 
 -   Basic CRUD funtionalities:
